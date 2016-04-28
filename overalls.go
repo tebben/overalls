@@ -177,7 +177,12 @@ func testFiles() {
 		if !info.IsDir() {
 			return nil
 		}
-
+		
+		// TEST if it works on drone.io by forcing forward slash
+		path = strings.Replace(path, "\\", "/", -1)
+		projectPath = strings.Replace(projectPath, "\\", "/", -1)
+		//
+		
 		rel := strings.Replace(path, projectPath, "", 1)
 
 		if _, ignore := ignores[rel]; ignore {
