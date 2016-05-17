@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -147,20 +148,22 @@ func main() {
 func processDIR(wg *sync.WaitGroup, fullPath, relPath string, out chan<- []byte) {
 	defer wg.Done()
 
-	var path = strings.Replace(projectFlag + "/" + relPath, "\\", "/", -1)
+	var ppath = strings.Replace(projectFlag + "/" + relPath, "\\", "/", -1)
+	ppath = path.Clean(ppath)
+	
 	if debugFlag {
-		fmt.Println("Processing: go test -covermode=" + coverFlag + " -coverprofile=profile.coverprofile -outputdir=" + fullPath, path)
+		fmt.Println("Processing: go test -covermode=" + coverFlag + " -coverprofile=profile.coverprofile -outputdir=" + fullPath, ppath)
 	}
 
-	cmd := exec.Command("go", "test", "-covermode="+coverFlag, "-coverprofile=profile.coverprofile", "-outputdir="+fullPath, path)
+	cmd := exec.Command("go", "test", "-covermode="+coverFlag, "-coverprofile=profile.coverprofile", "-outputdir="+fullPath, ppath)
 	if err := cmd.Run(); err != nil {
-		fmt.Printf("ERROR executing test command on package %s, %v", path, err)
+		fmt.Printf("ERROR executing test command on package %s, %v", ppath, err)
 		os.Exit(1)
 	}
 
 	b, err := ioutil.ReadFile(fullPath + "/profile.coverprofile")
 	if err != nil {
-		fmt.Printf("ERROR reading coverprofile on package %s: %v", path, err)
+		fmt.Printf("ERROR reading coverprofile on package %s: %v", ppath, err)
 		os.Exit(1)
 	}
 
