@@ -145,7 +145,6 @@ func main() {
 }
 
 func processDIR(wg *sync.WaitGroup, fullPath, relPath string, out chan<- []byte) {
-
 	defer wg.Done()
 
 	var path = strings.Replace(projectFlag + "/" + relPath, "\\", "/", -1)
@@ -155,16 +154,16 @@ func processDIR(wg *sync.WaitGroup, fullPath, relPath string, out chan<- []byte)
 
 	cmd := exec.Command("go", "test", "-covermode="+coverFlag, "-coverprofile=profile.coverprofile", "-outputdir="+fullPath, path)
 	if err := cmd.Run(); err != nil {
-		fmt.Println("ERROR:", err)
+		fmt.Printf("ERROR 1: %v", err)
 		os.Exit(1)
 	}
 
 	b, err := ioutil.ReadFile(fullPath + "/profile.coverprofile")
 	if err != nil {
-		fmt.Println("ERROR:", err)
+		fmt.Printf("ERROR 2: %v", err)
 		os.Exit(1)
 	}
-	fmt.Println("done")
+
 	out <- b
 }
 
