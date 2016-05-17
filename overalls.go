@@ -148,22 +148,23 @@ func processDIR(wg *sync.WaitGroup, fullPath, relPath string, out chan<- []byte)
 
 	defer wg.Done()
 
+	var path = strings.Replace(projectFlag + "/" + relPath, "\\", "/", -1)
 	if debugFlag {
-		fmt.Println("Processing: go test -covermode=" + coverFlag + " -coverprofile=profile.coverprofile -outputdir=" + fullPath + "/ " + relPath)
+		fmt.Println("Processing: go test -covermode=" + coverFlag + " -coverprofile=profile.coverprofile -outputdir=" + fullPath, path)
 	}
 
-	cmd := exec.Command("go", "test", "-covermode="+coverFlag, "-coverprofile=profile.coverprofile", "-outputdir="+fullPath+"/", relPath)
+	cmd := exec.Command("go", "test", "-covermode="+coverFlag, "-coverprofile=profile.coverprofile", "-outputdir="+fullPath, path)
 	if err := cmd.Run(); err != nil {
 		fmt.Println("ERROR:", err)
 		os.Exit(1)
 	}
 
-	b, err := ioutil.ReadFile(relPath + "/profile.coverprofile")
+	b, err := ioutil.ReadFile(fullPath + "/profile.coverprofile")
 	if err != nil {
 		fmt.Println("ERROR:", err)
 		os.Exit(1)
 	}
-
+	fmt.Println("done")
 	out <- b
 }
 
@@ -182,24 +183,20 @@ func testFiles() {
 		path = strings.Replace(path, "\\", "/", -1)
 		projectPath = strings.Replace(projectPath, "\\", "/", -1)
 		//
-		
 		rel := strings.Replace(path, projectPath, "", 1)
 
 		if _, ignore := ignores[rel]; ignore {
 			return filepath.SkipDir
 		}
 
-		rel = "./" + rel
-
-		if files, err := filepath.Glob(rel + "/*_test.go"); len(files) == 0 || err != nil {
-
+		if files, err := filepath.Glob(path + "/*_test.go"); len(files) == 0 || err != nil {
 			if err != nil {
 				fmt.Println("Error checking for test files")
 				os.Exit(1)
 			}
 
 			if debugFlag {
-				fmt.Println("No Go Test files in DIR:", rel, "skipping")
+				//fmt.Println("No Go Test files in DIR:", rel, "skipping")
 			}
 
 			return nil
