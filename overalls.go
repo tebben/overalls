@@ -176,9 +176,9 @@ func testFiles() {
 	out := make(chan []byte)
 	wg := &sync.WaitGroup{}
 
-	walker := func(path string, info os.FileInfo, err error) error {
-
-		if !info.IsDir() {
+	walker := func(path string, info os.FileInfo, err error) error {		
+		//please just work on drone.io
+		if !info.IsDir() || path == "github.com/geodan/gost/src" {
 			return nil
 		}
 		
@@ -191,7 +191,8 @@ func testFiles() {
 		if _, ignore := ignores[rel]; ignore {
 			return filepath.SkipDir
 		}
-
+	
+		
 		if files, err := filepath.Glob(path + "/*_test.go"); len(files) == 0 || err != nil {
 			if err != nil {
 				fmt.Println("Error checking for test files")
