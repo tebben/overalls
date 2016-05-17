@@ -152,7 +152,7 @@ func processDIR(wg *sync.WaitGroup, fullPath, relPath string, out chan<- []byte)
 		fmt.Println("Processing: go test -covermode=" + coverFlag + " -coverprofile=profile.coverprofile -outputdir=" + fullPath + "/ " + relPath)
 	}
 
-	cmd := exec.Command("go", "test -v", "-covermode="+coverFlag, "-coverprofile=profile.coverprofile", "-outputdir="+fullPath+"/", relPath)
+	cmd := exec.Command("go", "test", "-covermode="+coverFlag, "-coverprofile=profile.coverprofile", "-outputdir="+fullPath+"/", relPath)
 	if err := cmd.Run(); err != nil {
 		fmt.Println("ERROR:", err)
 		os.Exit(1)
