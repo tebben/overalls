@@ -177,8 +177,8 @@ func testFiles() {
 	wg := &sync.WaitGroup{}
 
 	walker := func(path string, info os.FileInfo, err error) error {		
-		//please just work on drone.io
-		if !info.IsDir() || path == "github.com/geodan/gost/src" {
+
+		if !info.IsDir() {
 			return nil
 		}
 		
@@ -188,6 +188,13 @@ func testFiles() {
 		//
 		rel := strings.Replace(path, projectPath, "", 1)
 
+		//please just work on drone.io
+		ppath := strings.Replace(projectFlag + "/" + rel, "\\", "/", -1)
+		ppath = filepath.Clean(ppath)
+		if ppath == "github.com/geodan/gost/src" {
+			return nil
+		}
+		
 		if _, ignore := ignores[rel]; ignore {
 			return filepath.SkipDir
 		}
