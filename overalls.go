@@ -150,6 +150,7 @@ func processDIR(wg *sync.WaitGroup, fullPath, relPath string, out chan<- []byte)
 
 	var ppath = strings.Replace(projectFlag + "/" + relPath, "\\", "/", -1)
 	ppath = path.Clean(ppath)
+	fullPath = path.Clean(fullPath)
 	
 	if debugFlag {
 		fmt.Println("Processing: go test -covermode=" + coverFlag + " -coverprofile=profile.coverprofile -outputdir=" + fullPath, ppath)
