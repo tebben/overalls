@@ -154,13 +154,13 @@ func processDIR(wg *sync.WaitGroup, fullPath, relPath string, out chan<- []byte)
 
 	cmd := exec.Command("go", "test", "-covermode="+coverFlag, "-coverprofile=profile.coverprofile", "-outputdir="+fullPath, path)
 	if err := cmd.Run(); err != nil {
-		fmt.Printf("ERROR 1: %v", err)
+		fmt.Printf("ERROR executing test command on package %s, %v", path, err)
 		os.Exit(1)
 	}
 
 	b, err := ioutil.ReadFile(fullPath + "/profile.coverprofile")
 	if err != nil {
-		fmt.Printf("ERROR 2: %v", err)
+		fmt.Printf("ERROR reading coverprofile on package %s: %v", path, err)
 		os.Exit(1)
 	}
 
